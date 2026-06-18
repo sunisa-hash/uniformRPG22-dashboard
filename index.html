@@ -480,10 +480,10 @@ s.forEach(x=>{
   else if(lv===4) sev.l4++;
 });
 const sevParts=[];
-if(sev.l4) sevParts.push('🚨 '+sev.l4);
-if(sev.l3) sevParts.push('⚠️ '+sev.l3);
-if(sev.l2) sevParts.push('🔶 '+sev.l2);
-if(sev.l1) sevParts.push('🟡 '+sev.l1);
+if(sev.l4) sevParts.push('🚨 '+sev.l4+' มาตรการสูงสุด');
+if(sev.l3) sevParts.push('⚠️ '+sev.l3+' ทัณฑ์บน');
+if(sev.l2) sevParts.push('🔶 '+sev.l2+' เชิญผู้ปกครอง');
+if(sev.l1) sevParts.push('🟡 '+sev.l1+' ตักเตือน');
 const k4s=document.getElementById('k4s');
 if(k4s) k4s.textContent=sevParts.length?sevParts.join('  '):'ทุกคนยังไม่เกินเกณฑ์';
 }
