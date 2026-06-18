@@ -453,7 +453,7 @@ function renderKPI(){
   const s=ST.sum;
   const tot=s.length, vio=s.filter(x=>x.tot>0).length;
   const rate=tot?((tot-vio)/tot*100).toFixed(1):0;
-  const sent=s.filter(x=>x.stat.includes('ส่งกิจการ')).length;
+  const sent=s.filter(x=>x.stat.includes('แจ้งกิจการ')).length;
   const fr=fRows(), ins=[...new Set(fr.map(r=>r.insp))].filter(Boolean);
   const cls=[...new Set(s.map(r=>r.cls))].length;
   q('k1').textContent=tot.toLocaleString();
