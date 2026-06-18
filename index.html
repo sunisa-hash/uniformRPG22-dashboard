@@ -237,7 +237,7 @@ footer{text-align:center;padding:18px 26px;font-size:12px;color:var(--td);
   </div>
   <div class="kc kr">
     <div class="ki">⚠️</div><div class="kl">แจ้งกิจการนักเรียน</div>
-    <div class="kv" id="k4">—</div><div class="ks">ผิดระเบียบสะสม ≥ 3 ครั้ง</div>
+    <div class="kv" id="k4">—</div><div class="ks" id="k4s">เริ่มมีการลงโทษ (≥ 3 ครั้ง)</div>
   </div>
 </div>
 
@@ -325,7 +325,7 @@ const CFG = {
   SHEET_ID:    '1nGbngTtaPZqAz0bz0Tsqsw43VZt6QbeLNYRPL9Wowck',
   GID_FORM:    '1750174542',
   GID_SUM:     '96306164',
-  SENT_THR:    3,
+  SENT_THR:    3,   // ตักเตือน (รอบ 1) เริ่มที่ >= 3 ครั้ง
   AUTO_MIN:    0,
   VL: ['เครื่องแบบผิดระเบียบ','ถุงเท้า','ทรงผม','เล็บ'],
   VC: ['#1a6a9a','#1a7a4a','#6b4fa0','#c0392b'],
@@ -453,7 +453,14 @@ function renderKPI(){
   const s=ST.sum;
   const tot=s.length, vio=s.filter(x=>x.tot>0).length;
   const rate=tot?((tot-vio)/tot*100).toFixed(1):0;
-  const sent=s.filter(x=>x.stat.includes('แจ้งกิจการ')).length;
+  const getSeverity = tot => {
+  if(tot>=12) return {label:'🚨 มาตรการสูงสุด',level:4};
+  if(tot>=9)  return {label:'⚠️ ทัณฑ์บนขั้นรุนแรง',level:3};
+  if(tot>=6)  return {label:'🔶 เชิญผู้ปกครอง',level:2};
+  if(tot>=3)  return {label:'🟡 ตักเตือน',level:1};
+  return {label:'✅ ปกติ',level:0};
+};
+const sent=s.filter(x=>x.tot>=CFG.SENT_THR).length;
   const fr=fRows(), ins=[...new Set(fr.map(r=>r.insp))].filter(Boolean);
   const cls=[...new Set(s.map(r=>r.cls))].length;
   q('k1').textContent=tot.toLocaleString();
@@ -464,6 +471,21 @@ function renderKPI(){
   q('k3').textContent=fr.length;
   q('k3s').textContent=`โดย ${ins.length} ผู้ตรวจ`;
   q('k4').textContent=sent;
+const sev={l1:0,l2:0,l3:0,l4:0};
+s.forEach(x=>{
+  const lv=getSeverity(x.tot).level;
+  if(lv===1) sev.l1++;
+  else if(lv===2) sev.l2++;
+  else if(lv===3) sev.l3++;
+  else if(lv===4) sev.l4++;
+});
+const sevParts=[];
+if(sev.l4) sevParts.push('🚨 '+sev.l4);
+if(sev.l3) sevParts.push('⚠️ '+sev.l3);
+if(sev.l2) sevParts.push('🔶 '+sev.l2);
+if(sev.l1) sevParts.push('🟡 '+sev.l1);
+const k4s=document.getElementById('k4s');
+if(k4s) k4s.textContent=sevParts.length?sevParts.join('  '):'ทุกคนยังไม่เกินเกณฑ์';
 }
 
 function renderDonut(){
