@@ -620,7 +620,14 @@ function renderInsp(){
 }
 
 function renderNotes(){
-  const f=ST.notes.filter(n=>(!ST.from||n.date>=ST.from)&&(!ST.to||n.date<=ST.to));
+  const f=ST.notes.filter(n=>{
+    if(ST.from && n.date<ST.from) return false;
+    if(ST.to   && n.date>ST.to)   return false;
+    if(ST.lvl==='p')   return n.room.startsWith('ป.');
+    if(ST.lvl==='m13') return /^ม\.[123]/.test(n.room);
+    if(ST.lvl==='m46') return /^ม\.[456]/.test(n.room);
+    return true;
+  });
   q('nchip').textContent=`${f.length} รายการ`;
   q('nl').innerHTML=f.length===0
     ?'<div style="color:var(--td);font-size:13px;padding:10px 0">ไม่มีหมายเหตุในช่วงเวลานี้</div>'
@@ -629,7 +636,13 @@ function renderNotes(){
 }
 
 function renderKW(){
-  const txt=ST.notes.map(n=>n.note).join(' ');
+  function renderKW(){
+  const txt=ST.notes.filter(n=>{
+    if(ST.lvl==='p')   return n.room.startsWith('ป.');
+    if(ST.lvl==='m13') return /^ม\.[123]/.test(n.room);
+    if(ST.lvl==='m46') return /^ม\.[456]/.test(n.room);
+    return true;
+  }).map(n=>n.note).join(' ');
   const kws=CFG.KW.map(k=>({...k,cnt:(txt.match(new RegExp(k.w,'g'))||[]).length}))
     .sort((a,b)=>b.cnt-a.cnt);
   const mx=Math.max(...kws.map(k=>k.cnt),1);
