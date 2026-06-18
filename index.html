@@ -442,7 +442,16 @@ async function loadData(){
   }
 }
 
-function fRows(){ return ST.form.filter(r=>(!ST.from||r.date>=ST.from)&&(!ST.to||r.date<=ST.to)); }
+function fRows(){
+  return ST.form.filter(r=>{
+    if(ST.from && r.date<ST.from) return false;
+    if(ST.to   && r.date>ST.to)   return false;
+    if(ST.lvl==='p')   return r.room.startsWith('ป.');
+    if(ST.lvl==='m13') return /^ม\.[123]/.test(r.room);
+    if(ST.lvl==='m46') return /^ม\.[456]/.test(r.room);
+    return true;
+  });
+}
 
 function renderAll(){
   renderKPI(); renderDonut(); renderBar(); renderLine();
