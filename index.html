@@ -636,7 +636,6 @@ function renderNotes(){
 }
 
 function renderKW(){
-  function renderKW(){
   const txt=ST.notes.filter(n=>{
     if(ST.lvl==='p')   return n.room.startsWith('ป.');
     if(ST.lvl==='m13') return /^ม\.[123]/.test(n.room);
