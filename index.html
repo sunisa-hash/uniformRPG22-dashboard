@@ -411,16 +411,19 @@ async function loadData(){
     const iR=fi('ชั้น')>=0?fi('ชั้น'):fi('ห้อง')>=0?fi('ห้อง'):fi('ชั้น/ห้อง')>=0?fi('ชั้น/ห้อง'):2;
     const nIdxs=fc.map((c,i)=>c.includes('หมายเหตุ')?i:-1).filter(i=>i>=0);
     ST.form=[]; ST.notes=[];
-    fd.table.rows.forEach(row=>{
-      if(!row.c) return;
-      const date=gdate(row.c[0]);
-      const insp=String(cv(row.c[iI])||'').trim();
-      const room=String(cv(row.c[iR])||'').trim();
-      const ns=nIdxs.map(i=>String(cv(row.c[i])||'').trim()).filter(Boolean);
-      if(!date&&!insp) return;
-      ST.form.push({date,insp,room,ns});
-      ns.forEach(n=>ST.notes.push({date,room,insp,note:n}));
-    });
+    fd.table.rows.forEach(row => {
+  if (!row.c) return;
+  const date = gdate(row.c[0]);
+  const insp = String(cv(row.c[iI]) || '').trim();
+  const room = String(cv(row.c[iR]) || '').trim();
+  const ns = nIdxs.map(i => String(cv(row.c[i]) || '').trim()).filter(Boolean);
+  // กรองแถวที่เป็น header/placeholder ออก ไม่ใช่ข้อมูลจริง
+  if (!date) return;
+  if (insp === 'ชื่อผู้ตรวจ' || insp === 'ผู้ตรวจ') return;
+  if (room === 'ชั้น/ห้องที่ตรวจ' || room === 'ชั้น' || room === 'ห้อง') return;
+  ST.form.push({date, insp, room, ns});
+  ns.forEach(n => ST.notes.push({date, room, insp, note: n}));
+});
 
     // — date range —
     const dates=[...new Set(ST.form.map(r=>r.date))].filter(Boolean).sort();
